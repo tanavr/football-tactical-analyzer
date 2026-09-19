@@ -1,0 +1,35 @@
+# Secrets and local configuration
+.env
+.env.*
+*.pem
+*.key
+
+# Python environments and generated files
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+
+# JavaScript dependencies and builds
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# Local datasets are opt-in; review small labeled fixtures before tracking
+/data/**
+!/data/**/
+!/data/**/*.md
+
+# Local artifacts
+.DS_Store
+*.log
