@@ -17,6 +17,7 @@ __pycache__/
 .coverage.*
 htmlcov/
 *.egg-info/
+.eggs/
 
 # JavaScript dependencies and builds
 node_modules/
@@ -33,3 +34,4 @@ coverage/
 # Local artifacts
 .DS_Store
 *.log
+*.tsbuildinfo

@@ -2,8 +2,9 @@
 
 ## Scope and status
 
-The project is in the planning stage. This document describes the proposed design;
-application code and a data provider have not been added yet.
+The project has a React landing page and a FastAPI health endpoint. This document
+describes the planned analytical features; data providers and analytics are not
+implemented yet.
 
 The application will let a user select a club and season, inspect seven tactical
 traits and their explanations, compare two club-seasons, and simulate a hypothetical
@@ -179,5 +180,5 @@ Add frontend build/lint checks when frontend configuration exists.
 
 Never commit secrets, `.env` files, dependencies, virtual environments, or large raw
 datasets. Keep collection output ignored and review fixture size and rights before
-tracking it. Until application code is added, checks cover document consistency,
-ignore rules, and whitespace.
+tracking it. Current scaffold checks cover the health endpoint, local-development
+CORS behavior, and the frontend production build, alongside whitespace checks.
