@@ -1,1 +1,1 @@
-"""Reserved for data-source adapters and collection utilities."""
+"""Data-source adapters and retrieval; independent of analytics and API routes."""

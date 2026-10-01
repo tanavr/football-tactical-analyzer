@@ -27,6 +27,7 @@ coverage/
 .vite/
 
 # Local datasets are opt-in; review small labeled fixtures before tracking
+/data/cache/
 /data/**
 !/data/**/
 !/data/**/*.md

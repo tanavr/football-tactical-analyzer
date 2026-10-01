@@ -6,6 +6,11 @@ The current scaffold includes a React landing page and a FastAPI backend with
 `GET /health`. Analyze Team, Compare Teams, and Match Simulator are placeholders.
 No football data, analytics, or simulation results are included yet.
 
+The backend now includes a modular data layer for public StatsBomb JSON and a
+synthetic offline fixture provider. It is not connected to the frontend or API yet.
+See [DATA.md](docs/DATA.md) for usage, available competitions/seasons, caching, and
+coverage limitations. Downloaded data stays in the ignored `data/cache/` directory.
+
 ## Requirements
 
 - Python 3.9 or newer (Python 3.12+ recommended for new installations)
@@ -81,7 +86,7 @@ backend/
     main.py       FastAPI application and local CORS configuration
     api/          HTTP routes
     analytics/    Reserved for analytical functions
-    data/         Reserved for source adapters and collection
+    data/         Provider interface, StatsBomb adapter, cache, and fixtures
     models/       Pydantic schemas
   tests/          Health and CORS tests
   pyproject.toml  Python dependencies and pytest configuration

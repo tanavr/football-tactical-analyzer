@@ -46,4 +46,4 @@ See [the architecture plan](docs/ARCHITECTURE.md) for the proposed application d
 - Keep commits focused on one change or milestone and review the staged diff before
   committing.
 - Follow the implementation order in `docs/ARCHITECTURE.md`. The repository is
-  currently scaffolded; data and analytics are not implemented yet.
+  includes a data-provider layer; analytics are not implemented yet.
