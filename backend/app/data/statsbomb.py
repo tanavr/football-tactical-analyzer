@@ -55,12 +55,42 @@ def normalize_match(row: dict[str, Any], provenance: Provenance) -> Match:
 def normalize_event(row: dict[str, Any], provenance: Provenance, match_id: str) -> Event:
     if not isinstance(row["id"], str) or not row["id"]:
         raise ValueError("Event ID must be a nonempty string")
+    passing = row.get("pass")
+    completed = None
+    if isinstance(passing, dict):
+        if "outcome" not in passing:
+            completed = True  # StatsBomb documents omitted outcome as a completed pass.
+        elif isinstance(passing["outcome"], dict):
+            outcome = passing["outcome"].get("name")
+            if outcome in {"Incomplete", "Out", "Pass Offside", "Injury Clearance"}:
+                completed = False
+            # Unknown/null outcomes stay unknown; never count them as success.
+    pattern = row.get("play_pattern")
+    pattern_name = pattern.get("name") if isinstance(pattern, dict) else None
+    known_patterns = {"Regular Play", "From Corner", "From Free Kick", "From Throw In",
+                      "From Counter", "Other", "From Goal Kick", "From Keeper", "From Kick Off"}
+    duel = row.get("duel") or {}
+    shot = row.get("shot") or {}
+    if not isinstance(duel, dict) or not isinstance(shot, dict):
+        raise ValueError("Shot and duel attributes must be objects")
+    if duel.get("type") is not None and not isinstance(duel["type"], dict):
+        raise ValueError("Duel type must be an object")
+    duel_type = (duel.get("type") or {}).get("name")
     return Event(id=f"statsbomb:event:{row['id']}", match_id=match_id, index=row["index"],
                  type=row["type"]["name"], period=row["period"], minute=row["minute"],
                  second=row["second"],
                  team_id=source_id("team", row["team"]["id"]) if row.get("team") else None,
                  player_id=source_id("player", row["player"]["id"]) if row.get("player") else None,
-                 location=row.get("location"), source_fields=row, provenance=provenance)
+                 location=row.get("location"), source_fields=row, provenance=provenance,
+                 coordinate_system="attacking_120x80",
+                 pass_end_location=passing.get("end_location") if isinstance(passing, dict) else None,
+                 pass_completed=completed,
+                 shot_xg=shot.get("statsbomb_xg"),
+                 possession_id=str(row["possession"]) if row.get("possession") is not None else None,
+                 possession_team_id=source_id("team", row["possession_team"]["id"])
+                 if row.get("possession_team") else None,
+                 from_counterattack=(pattern_name == "From Counter") if pattern_name in known_patterns else None,
+                 is_tackle=(duel_type == "Tackle") if duel_type in {"Tackle", "Aerial Lost"} else None)
 
 
 class StatsBombOpenDataProvider(FootballDataProvider):

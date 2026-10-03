@@ -4,12 +4,16 @@ Analyze, compare, and simulate football teams across seasons.
 
 The current scaffold includes a React landing page and a FastAPI backend with
 `GET /health`. Analyze Team, Compare Teams, and Match Simulator are placeholders.
-No football data, analytics, or simulation results are included yet.
+The website does not display football data, analytics, or simulation results yet.
 
 The backend now includes a modular data layer for public StatsBomb JSON and a
 synthetic offline fixture provider. It is not connected to the frontend or API yet.
 See [DATA.md](docs/DATA.md) for usage, available competitions/seasons, caching, and
 coverage limitations. Downloaded data stays in the ignored `data/cache/` directory.
+
+The raw `TeamSeasonMetrics` engine summarizes supplied match/event records in Python.
+See [METRICS.md](docs/METRICS.md) for formulas, usage, and missing-data rules. It does
+not yet assign tactical scores or labels and is not connected to the website.
 
 ## Requirements
 

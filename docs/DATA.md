@@ -171,5 +171,11 @@ Possession percentage, PPDA, counterattack rates, and other tactical aggregates 
 not supplied as ready-to-use fields by this layer. Some can potentially be derived
 from events only after definitions, coverage, and denominators are established.
 Continuous tracking and defensive-line height are not available through these
-methods; 360 snapshots are a separate, selectively available source. No cross-league
-strength adjustment, rate calculation, normalization score, or prediction is built.
+methods; 360 snapshots are a separate, selectively available source. Raw rates are
+now calculated by the separate engine documented in [METRICS.md](METRICS.md).
+No cross-league strength adjustment, tactical normalization score, or prediction is built.
+
+The event adapter now also exposes optional normalized pass completion/endpoints,
+shot xG, possession identity/owner, counter tags, tackle classification, and an
+explicit coordinate convention. These semantic fields allow analytics to avoid
+reading provider-specific `source_fields`. Their missing-data rules are in METRICS.md.

@@ -45,5 +45,5 @@ See [the architecture plan](docs/ARCHITECTURE.md) for the proposed application d
   small, reviewed, clearly labeled fixtures with provenance and redistribution rights.
 - Keep commits focused on one change or milestone and review the staged diff before
   committing.
-- Follow the implementation order in `docs/ARCHITECTURE.md`. The repository is
-  includes a data-provider layer; analytics are not implemented yet.
+- Follow the implementation order in `docs/ARCHITECTURE.md`. The repository includes
+  data providers and raw team-season metrics; tactical scores are not implemented yet.

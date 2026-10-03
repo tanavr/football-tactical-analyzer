@@ -65,6 +65,15 @@ class Event(Record):
     team_id: Optional[str] = None
     player_id: Optional[str] = None
     location: Optional[tuple[float, float]] = None
+    # Optional semantic fields populated by source adapters, never inferred by analytics.
+    coordinate_system: Optional[Literal["attacking_120x80"]] = None
+    pass_end_location: Optional[tuple[float, float]] = None
+    pass_completed: Optional[bool] = None
+    shot_xg: Optional[float] = Field(default=None, ge=0, le=1, allow_inf_nan=False)
+    possession_id: Optional[str] = None
+    possession_team_id: Optional[str] = None
+    from_counterattack: Optional[bool] = None
+    is_tackle: Optional[bool] = None
     # Preserve provider-specific attributes without claiming they are standardized.
     source_fields: dict[str, Any] = Field(default_factory=dict)
     provenance: Provenance

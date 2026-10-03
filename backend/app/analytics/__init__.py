@@ -1,1 +1,1 @@
-"""Reserved for tactical scoring and match models."""
+"""Pure football analytics; raw metrics are separate from future tactical scores."""

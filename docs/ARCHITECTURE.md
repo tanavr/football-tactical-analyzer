@@ -4,7 +4,8 @@
 
 The project has a React landing page and a FastAPI health endpoint. This document
 describes the planned analytical features. The data-provider layer is implemented
-(see `DATA.md`); analytics are not implemented yet.
+(see `DATA.md`), as are raw team-season metrics (see `METRICS.md`). Tactical scores,
+labels, and match simulations are not implemented yet.
 
 The application will let a user select a club and season, inspect seven tactical
 traits and their explanations, compare two club-seasons, and simulate a hypothetical
@@ -38,8 +39,9 @@ consume those records, and routes serialize their results to the frontend. The
 frontend displays calculations and explanations; it does not reimplement scoring.
 
 The Python `FootballDataProvider` abstract base class exposes competition/season and
-team discovery, matches, team matches, and match events. Team-season aggregates and
-metric capabilities remain future work. Implementations read fixtures or public
+team discovery, matches, team matches, and match events. The separate
+`TeamSeasonMetrics` engine summarizes already-retrieved records without I/O.
+Implementations read fixtures or public
 StatsBomb JSON through a local cache. Provider-specific names, units,
 identifiers, and collection details stay inside adapters. Inject the source into the
 API rather than selecting providers inside analytics.
