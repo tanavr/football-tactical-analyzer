@@ -18,7 +18,9 @@ match/event JSON array returns an empty list; a missing resource raises an error
 `StatsBombOpenDataProvider` maps public JSON into Pydantic models in
 `backend/app/models/football.py`. `CachedJSONSource` handles HTTP and disk caching
 separately from that mapping. Neither layer imports analytics or FastAPI. The
-existing API and frontend do not yet expose these providers.
+API exposes these providers through a service layer; the frontend is not integrated.
+Default HTTP serving is cache-only; use `python -m app.data.prepare` for separate
+collection. See [API.md](API.md) for preparation and reviewed coverage requirements.
 
 `FixtureFootballDataProvider` supplies a tiny, invented Sample League, two Sample
 teams, one match, and one event. All records carry `data_kind="sample"` and fixture

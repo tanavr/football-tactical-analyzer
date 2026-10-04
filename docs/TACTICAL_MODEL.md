@@ -168,7 +168,8 @@ excluded teams/reasons, constant components, and an interpretation/proxy flag.
 The profile carries competition-season, source and real/sample status, raw/model
 versions, configuration, and expected match counts. Input profiles are not modified.
 The full raw profiles must be retained by the caller for source hashes/provenance.
-No frontend or API endpoint is added in this stage.
+The API integration and reviewed coverage configuration are documented in
+[API.md](API.md). Frontend integration remains pending.
 
 Cross-season comparisons must rank each team against its own competition-season,
 using the same model/configuration and compatible source definitions. A 90 in one

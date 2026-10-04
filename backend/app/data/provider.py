@@ -25,6 +25,10 @@ class DataCacheError(DataProviderError):
     """Local cache access failed."""
 
 
+class DataNotPreparedError(DataProviderError):
+    """A required resource has not been downloaded for offline serving."""
+
+
 class FootballDataProvider(ABC):
     @abstractmethod
     def get_competitions(self) -> list[Competition]:

@@ -7,18 +7,26 @@ The current scaffold includes a React landing page and a FastAPI backend with
 The website does not display football data, analytics, or simulation results yet.
 
 The backend now includes a modular data layer for public StatsBomb JSON and a
-synthetic offline fixture provider. It is not connected to the frontend or API yet.
+synthetic offline fixture provider. API endpoints expose discovery and analytics;
+the frontend remains a landing page.
 See [DATA.md](docs/DATA.md) for usage, available competitions/seasons, caching, and
 coverage limitations. Downloaded data stays in the ignored `data/cache/` directory.
 
 The raw `TeamSeasonMetrics` engine summarizes supplied match/event records in Python.
 See [METRICS.md](docs/METRICS.md) for formulas, usage, and missing-data rules. It does
-not yet assign tactical scores or labels and is not connected to the website.
+not itself assign tactical scores or labels and is not connected to the website.
 
 The separate `TacticalStyleModel` now ranks these metrics within a sufficiently
 covered competition-season cohort and produces rule-based descriptions. See
 [TACTICAL_MODEL.md](docs/TACTICAL_MODEL.md) for formulas, usage, synthetic examples,
 and proxy limitations. This scoring layer is also not connected to the website yet.
+
+See [API.md](docs/API.md) for the discovery, metrics, and tactical-profile endpoints,
+error formats, and coverage review configuration. The default API reads cached data
+only. Prepare the catalog separately with `python -m app.data.prepare` from the
+activated backend environment; requesting uncached data returns 503. Event metrics
+need reviewed feed coverage, and tactical scoring also needs reviewed roster counts.
+For an offline sample API, run `python -m uvicorn app.main:create_demo_app --factory`.
 
 ## Requirements
 
@@ -93,7 +101,8 @@ server is separate from the port-5173 development server.
 backend/
   app/
     main.py       FastAPI application and local CORS configuration
-    api/          HTTP routes
+    api/          HTTP routes and error mapping
+    services/     Provider and analytics orchestration
     analytics/    Reserved for analytical functions
     data/         Provider interface, StatsBomb adapter, cache, and fixtures
     models/       Pydantic schemas

@@ -13,6 +13,7 @@ import httpx
 
 from app.data.provider import DataCacheError, DataFormatError, DataNetworkError, DataNotFoundError
 from app.models.football import Provenance
+from app.data.provider import DataNotPreparedError
 
 DEFAULT_CACHE = Path(__file__).resolve().parents[4] / "data" / "cache" / "statsbomb"
 
@@ -20,7 +21,7 @@ DEFAULT_CACHE = Path(__file__).resolve().parents[4] / "data" / "cache" / "statsb
 class CachedJSONSource:
     def __init__(self, cache_dir: Optional[Path] = DEFAULT_CACHE, *,
                  revision: str = "master", refresh: bool = False,
-                 transport: Optional[httpx.BaseTransport] = None) -> None:
+                 transport: Optional[httpx.BaseTransport] = None, offline: bool = False) -> None:
         # Accept a branch or commit hash, never arbitrary path components.
         if not revision or not all(c.isalnum() or c in "-_" for c in revision):
             raise ValueError("revision must be a branch name or commit hash without slashes")
@@ -29,6 +30,9 @@ class CachedJSONSource:
         self.cache_dir = Path(cache_dir) if cache_dir is not None else None
         self.refresh = refresh
         self.transport = transport
+        self.offline = offline
+        if offline and refresh:
+            raise ValueError("Offline mode cannot refresh downloads")
 
     def read(self, path: str) -> tuple[list[dict[str, Any]], Provenance]:
         if not re.fullmatch(r"competitions\.json|matches/[1-9][0-9]*/[1-9][0-9]*\.json|events/[1-9][0-9]*\.json", path):
@@ -53,6 +57,8 @@ class CachedJSONSource:
             except (ValueError, KeyError, TypeError) as exc:
                 raise DataFormatError(f"Invalid cache {cache}; retry with refresh=True") from exc
 
+        if self.offline:
+            raise DataNotPreparedError("Required source data is not cached; run the preparation command first")
         try:
             with httpx.Client(timeout=30, follow_redirects=True, transport=self.transport) as client:
                 response = client.get(url)

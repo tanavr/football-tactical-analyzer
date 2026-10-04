@@ -5,8 +5,9 @@
 The project has a React landing page and a FastAPI health endpoint. This document
 describes the planned analytical features. The data-provider layer is implemented
 (see `DATA.md`), as are raw team-season metrics (see `METRICS.md`) and interpretable
-tactical scores/labels (see `TACTICAL_MODEL.md`). Match simulations and frontend
-integration of these analytics are not implemented yet.
+tactical scores/labels (see `TACTICAL_MODEL.md`). The API exposes these layers through
+`FootballService` (see `API.md`). Match simulations and frontend integration of
+these analytics are not implemented yet.
 
 The application will let a user select a club and season, inspect seven tactical
 traits and their explanations, compare two club-seasons, and simulate a hypothetical
@@ -20,6 +21,7 @@ frontend/                 React + Vite + JavaScript; lightweight Recharts visual
 backend/
   app/
     api/                  FastAPI routes and request orchestration
+    services/             Provider access, coverage checks, analytics orchestration
     analytics/            Pure rate, normalization, scoring, and simulation functions
     data/                 Source interface, provider adapters, collection commands
     models/               Pydantic canonical records and API schemas
@@ -120,12 +122,18 @@ Do not claim calibrated accuracy or invent confidence intervals. Evaluate on hel
 chronologically later matches using log loss, Brier score, and calibration summaries
 against simple baselines before making predictive claims.
 
-## Planned API and user experience
+## API and planned user experience
 
-- `GET /api/catalog`: available competitions, clubs, seasons, and source capabilities.
-- `GET /api/profiles`: one club-season selected by stable identifiers.
-- `GET /api/comparisons`: two explicitly identified club-seasons and their profiles.
-- `POST /api/simulations`: two club-season identifiers and supported venue settings.
+- `GET /competitions` and `GET /competitions/{competition_id}/seasons`: discovery.
+- `GET /competitions/{competition_id}/seasons/{season_id}/teams`: available teams.
+- The same scoped path plus `/teams/{team_id}/metrics` or
+  `/teams/{team_id}/tactical-profile`: raw metrics or scored profiles.
+- Comparison and simulation endpoints remain planned, not implemented.
+
+See `API.md` for response models, errors, offline preparation, and the server-owned
+coverage manifest. Default request handling never downloads data. Uncached resources
+return 503; tactical requests lacking independently reviewed roster counts return
+409. Verified but insufficient cohorts return the model's unavailable scores.
 
 Use Pydantic request/response schemas and explicit errors for unknown records,
 incompatible definitions, or insufficient data. Return partial profiles with reasons
