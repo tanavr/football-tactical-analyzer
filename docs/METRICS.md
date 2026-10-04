@@ -4,6 +4,7 @@
 Pydantic `TeamSeasonProfile`. This is a statistical summary, not a tactical score,
 classification, strength rating, or prediction. Calculations perform no network or
 filesystem access. Source adapters populate event semantics before analytics runs.
+The separate scoring layer is documented in [TACTICAL_MODEL.md](TACTICAL_MODEL.md).
 
 ## Inputs and coverage
 

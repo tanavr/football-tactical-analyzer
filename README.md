@@ -15,6 +15,11 @@ The raw `TeamSeasonMetrics` engine summarizes supplied match/event records in Py
 See [METRICS.md](docs/METRICS.md) for formulas, usage, and missing-data rules. It does
 not yet assign tactical scores or labels and is not connected to the website.
 
+The separate `TacticalStyleModel` now ranks these metrics within a sufficiently
+covered competition-season cohort and produces rule-based descriptions. See
+[TACTICAL_MODEL.md](docs/TACTICAL_MODEL.md) for formulas, usage, synthetic examples,
+and proxy limitations. This scoring layer is also not connected to the website yet.
+
 ## Requirements
 
 - Python 3.9 or newer (Python 3.12+ recommended for new installations)

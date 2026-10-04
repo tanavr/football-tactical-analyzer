@@ -4,8 +4,9 @@
 
 The project has a React landing page and a FastAPI health endpoint. This document
 describes the planned analytical features. The data-provider layer is implemented
-(see `DATA.md`), as are raw team-season metrics (see `METRICS.md`). Tactical scores,
-labels, and match simulations are not implemented yet.
+(see `DATA.md`), as are raw team-season metrics (see `METRICS.md`) and interpretable
+tactical scores/labels (see `TACTICAL_MODEL.md`). Match simulations and frontend
+integration of these analytics are not implemented yet.
 
 The application will let a user select a club and season, inspect seven tactical
 traits and their explanations, compare two club-seasons, and simulate a hypothetical
@@ -58,65 +59,37 @@ Store totals and denominators so rates use weighted aggregation rather than aver
 of match percentages. Never combine mismatched match coverage. Metric definitions
 must be compatible before pooling providers; otherwise report incompatibility.
 
-## Proposed tactical metrics
+## Tactical metrics, normalization, and descriptions
 
-The following metrics are provisional until a data source is selected. Missing inputs
-leave the corresponding trait unavailable. The metric reference will record source
-fields, formulas, units, coverage, cohort rules, and limitations for each version.
+Raw statistical definitions live in `METRICS.md`; implemented score formulas,
+coverage requirements, and ordered classification rules live in `TACTICAL_MODEL.md`.
+These replace the preliminary metric proposals based on fields not yet available.
 
-For an event count `x`, `per90(x) = 90 * x / minutes`. Undefined or nonpositive
-denominators produce an unavailable value. Percentages below are proportions in
-`[0, 1]` until formatted for display. Define `P(x)` as the cohort percentile score
-below; each trait lies on a 0–100 relative scale.
+`TacticalStyleModel` consumes `TeamSeasonProfile` records from one competition-season
+and an independently verified full roster with expected completed-match counts.
+Default eligibility requires 10 covered matches and 80% match coverage per team,
+plus 10 eligible teams and 80% roster coverage per dimension. Composite components
+must use identical match sets within each team. Missing values are not imputed.
 
-| Trait | Proposed raw measure | Score and interpretation |
-| --- | --- | --- |
-| Possession | Possession time / measured in-play time, or a documented source possession measure | `P(possession)`; higher means more ball control |
-| Pressing intensity | PPDA: opponent passes in the defined pressing zone / team defensive actions in that same zone | `100 - P(PPDA)`; higher means fewer passes allowed per action |
-| Attacking intensity | Shots per 90 | `P(shots_per90)`; attacking volume, not shot quality |
-| Directness | Long-pass attempts / all pass attempts | `P(long_pass_share)`; a long-ball proxy, not attack speed |
-| Defensive activity | Tackles plus interceptions per 30 out-of-possession minutes: `30 * actions / oop_minutes` | `P(defensive_action_rate)`; activity, not defensive quality |
-| Counterattacking tendency | Source-tagged counterattack possessions / all team possessions | `P(counter_share)`; requires documented, consistent event tags |
-| Passing style | Short-pass attempts / all pass attempts | `P(short_pass_share)`; higher means a shorter passing preference |
+For ascending average rank `r` among `n` eligible teams, `P(x) = 100*(r-1)/(n-1)`.
+Ties use average ranks, constant components score 50, and insufficient samples return
+null. Two-component dimensions average their percentile scores with equal weights.
+The implemented dimensions are possession (passing-share proxy), pressing
+(advanced defensive-action share proxy), directness, attacking intensity, defensive
+activity, counterattacking tendency, and passing/control.
 
-PPDA zone boundaries and eligible actions, pass-length thresholds, and counterattack
-definitions must be recorded per provider and reconciled before comparisons. Do not
-infer counters from low possession or substitute tackles alone for pressing. Defensive
-activity requires measured out-of-possession time; it is unavailable without it.
-Directness and passing style overlap and are not independent dimensions.
+Explicit top-quartile rules assign identities and supporting traits; deterministic
+text templates explain the scores and limitations. Balanced requires all seven
+scores in [25,75), with separate handling for a wholly constant reference cohort.
+The model does not claim high pressing or deep/low-block defending from the available
+activity metrics. PPDA, measured possession time, and block-depth evidence remain
+future extensions rather than silently invented fields.
 
-## Normalization and tactical descriptions
-
-Build reference cohorts from all eligible teams in the same competition-season,
-using consistent metric definitions and match coverage. Initially require coverage
-of at least 80% of a team's completed league matches and at least 10 eligible teams
-per metric. These starting thresholds are configurable and need validation.
-An insufficient cohort produces an unavailable score and explanation.
-
-For `n` eligible teams and ascending average rank `r` (ties use average ranks), define
-`P(x) = 100 * (r - 1) / (n - 1)`. A constant cohort yields 50 for every team. Reverse
-direction only for metrics such as PPDA where a smaller value implies greater
-intensity. Missing records are excluded per metric, with cohort size and coverage
-returned in results. Do not impute values or silently renormalize a composite score.
-
-Comparing seasons displays raw metrics alongside their own league-season percentile
-scores, cohort metadata, and data limitations. These percentiles compare relative
-style within each environment; they do not establish absolute cross-league strength.
-Do not normalize only the two selected teams or treat percentile differences as
-calibrated probability differences. Use historical data available at the evaluation
-cutoff when backtesting to prevent future-data leakage.
-
-Initial tactical labels use configurable thresholds: possession,
-pressing, counterattacking, or directness scores of at least 75 trigger
-“possession-oriented,” “high pressing,” “counterattacking,” or “direct,” respectively.
-Labels may coexist. Use “balanced” only if all seven traits are available and each is
-between 25 and 75, excluding 75; otherwise return a mixed or incomplete profile.
-Missing evidence must not be described as balanced.
-
-Do not infer “defensive / low block” from high defensive activity or low possession.
-That label is deferred until spatial evidence such as defensive line height or action
-locations supports a separately documented rule. Return reasons for every assigned
-label and expose score/rule versions so descriptions remain reproducible.
+Cross-season comparisons must show raw metrics, coverage, and each team's own
+competition-season relative scores. Relative style does not measure absolute
+cross-league strength. Do not normalize only the two selected teams or interpret
+percentile differences as calibrated probability differences. Backtests must use
+only data available at the evaluation cutoff.
 
 ## Hypothetical match model
 
